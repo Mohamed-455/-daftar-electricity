@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#102a43">
+<title>دفتر الكهرباء | برنامج محاسبة</title>
+<style>
+:root{--navy:#102a43;--blue:#1769aa;--bg:#f3f6fa;--card:#fff;--text:#172b4d;--muted:#66788a;--line:#dbe3ec;--green:#16845b;--red:#c43d4b;--gold:#a86a00}
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;background:var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:11px 14px;background:var(--blue);color:#fff;font-weight:700}button.secondary{background:#e8eef5;color:var(--navy)}button.danger{background:#fff0f1;color:var(--red)}button.small{padding:7px 10px;font-size:13px}.top{background:linear-gradient(120deg,#102a43,#1769aa);color:white;padding:18px 16px 22px;border-radius:0 0 22px 22px}.topline{display:flex;justify-content:space-between;align-items:center;gap:12px}.brand{font-size:21px;font-weight:900}.sub{font-size:12px;opacity:.85}.top .sub{margin-top:5px}.wrap{max-width:950px;margin:auto;padding:12px 12px 90px}.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:-7px}.stat{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:14px;box-shadow:0 3px 12px #102a4308}.stat .label{font-size:12px;color:var(--muted)}.stat .num{font-size:20px;font-weight:900;margin-top:6px;overflow-wrap:anywhere}.green{color:var(--green)}.red{color:var(--red)}.nav{display:flex;gap:7px;overflow:auto;padding:12px 0 7px;position:sticky;top:0;background:var(--bg);z-index:4}.nav button{white-space:nowrap;flex:0 0 auto;padding:9px 12px;background:#e5ebf2;color:var(--navy);font-size:13px}.nav button.active{background:var(--navy);color:white}.panel{display:none}.panel.active{display:block}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:14px;margin:8px 0}.card h2{font-size:17px;margin:0 0 12px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.field{display:flex;flex-direction:column;gap:5px;margin-bottom:10px}.field label{font-size:12px;color:var(--muted);font-weight:700}.field input,.field select,.field textarea,.search{width:100%;border:1px solid #cbd6e2;background:#fff;border-radius:10px;padding:11px;color:var(--text);min-width:0}.field textarea{min-height:70px}.full{grid-column:1/-1}.actions{display:flex;gap:8px;flex-wrap:wrap}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:13px;min-width:480px}th,td{text-align:right;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#f6f8fb;color:#516477;white-space:nowrap}.empty{text-align:center;color:var(--muted);padding:24px}.pill{display:inline-block;padding:4px 8px;border-radius:99px;background:#eaf6f0;color:var(--green);font-size:11px}.pill.debt{background:#fff2df;color:var(--gold)}.notice{background:#fff8e6;border:1px solid #f0dfaa;padding:11px;border-radius:12px;font-size:12px;line-height:1.7;color:#6d5200}.muted{color:var(--muted);font-size:12px}.itemrow{display:grid;grid-template-columns:1fr 72px 95px 32px;gap:6px;align-items:center;margin:7px 0}.itemrow select,.itemrow input{width:100%;min-width:0;border:1px solid #cbd6e2;border-radius:8px;padding:9px;background:white}.itemrow .remove{background:#fff0f1;color:var(--red);padding:8px}.bottomspace{height:8px}.hide{display:none!important}
+@media(min-width:650px){.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.wrap{padding:18px 20px 50px}.top{padding:22px max(20px,calc((100vw - 910px)/2)) 28px}.grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media print{body{background:white}.top,.nav,.no-print,.stats{display:none!important}.wrap{padding:0;max-width:none}.panel{display:none!important}#printarea{display:block!important}.card{border:0;padding:0}.printhead{text-align:center}.printhead h2{font-size:20px}.printtable{min-width:0}.printtable th,.printtable td{border:1px solid #aaa}.printfoot{margin-top:20px}.onlyprint{display:block!important}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="topline"><div><div class="brand">⚡ دفتر الكهرباء</div><div class="sub">برنامج محاسبة ومخزون للموبايل والكمبيوتر</div><div class="sub" id="cloudStatus">المزامنة السحابية: غير مفعّلة بعد</div></div><div class="actions"><button class="secondary small" onclick="editShop()">إعدادات المحل</button><button class="small" onclick="openCloudLogin()">دخول / مزامنة</button></div></div>
+ <div class="sub" id="shopline">إدارة المبيعات والمشتريات والديون والأرباح</div>
+</header>
+<main class="wrap">
+ <section class="stats">
+  <div class="stat"><div class="label">مبيعات اليوم</div><div class="num" id="todaySales">0 ج.م</div></div>
+  <div class="stat"><div class="label">إجمالي الربح المسجل</div><div class="num green" id="totalProfit">0 ج.م</div></div>
+  <div class="stat"><div class="label">قيمة المخزون بالتكلفة</div><div class="num" id="stockValue">0 ج.م</div></div>
+  <div class="stat"><div class="label">ديون العملاء المتبقية</div><div class="num red" id="debtTotal">0 ج.م</div></div>
+ </section>
+ <nav class="nav no-print" id="nav">
+  <button class="active" data-tab="home">الرئيسية</button><button data-tab="products">المخزون</button><button data-tab="people">العملاء والموردون</button><button data-tab="invoice">فاتورة جديدة</button><button data-tab="invoices">الفواتير</button><button data-tab="debts">الديون والتحصيل</button><button data-tab="reports">التقارير</button><button data-tab="backup">نسخ احتياطي</button><button data-tab="cloudsetup">المزامنة السحابية</button>
+ </nav>
+ <section id="home" class="panel active">
+  <div class="card"><h2>مرحبًا بك 👋</h2><p class="muted">ابدأ بإضافة الأصناف وأسعار الشراء والبيع، ثم سجّل فواتيرك. البيانات محفوظة محليًا، ويمكن تفعيل المزامنة السحابية من تبويب المزامنة.</p><div class="actions"><button onclick="tab('products')">＋ إضافة صنف</button><button class="secondary" onclick="tab('invoice')">إنشاء فاتورة</button><button class="secondary" onclick="tab('reports')">عرض التقارير</button></div></div>
+  <div class="card"><h2>آخر الفواتير</h2><div id="recent"></div></div>
+  <div class="notice">تنبيه مهم: هذه نسخة أولية محلية للتجربة والإدارة اليومية. لا تمثل نظام فاتورة إلكترونية معتمدًا من مصلحة الضرائب، ولن تتزامن بين الأجهزة إلا بعد إعداد Firebase وتسجيل الدخول بالحساب نفسه. اعمل نسخة احتياطية بانتظام.</div>
+ </section>
+ <section id="products" class="panel">
+  <div class="card"><h2 id="prodTitle">إضافة صنف للمخزون</h2><input id="editProdId" type="hidden"><div class="grid">
+   <div class="field"><label>اسم الصنف *</label><input id="pName" placeholder="مثال: لمبة ليد 12 وات"></div>
+   <div class="field"><label>كود / باركود</label><div style="display:flex;gap:5px"><input id="pBarcode" placeholder="امسح أو اكتب الكود"><button class="secondary" onclick="scanBarcode('pBarcode')">📷</button></div></div>
+   <div class="field"><label>التصنيف</label><input id="pCategory" placeholder="أسلاك، مفاتيح، إضاءة..."></div>
+   <div class="field"><label>سعر الشراء (ج.م) *</label><input id="pCost" type="number" min="0" step=".01" placeholder="0"></div>
+   <div class="field"><label>سعر البيع (ج.م) *</label><input id="pPrice" type="number" min="0" step=".01" placeholder="0"></div>
+   <div class="field"><label>الكمية الحالية *</label><input id="pQty" type="number" min="0" step=".01" placeholder="0"></div>
+  </div><div class="actions"><button onclick="saveProduct()">حفظ الصنف</button><button class="secondary" onclick="resetProduct()">مسح الحقول</button></div></div>
+  <div class="card"><h2>الأصناف</h2><input class="search" id="prodSearch" placeholder="ابحث بالاسم أو الكود أو التصنيف" oninput="renderProducts()"><div id="productsTable" class="tablewrap"></div></div>
+ </section>
+ <section id="people" class="panel">
+  <div class="card"><h2>إضافة عميل أو مورد</h2><input type="hidden" id="editPersonId"><div class="grid">
+   <div class="field"><label>الاسم *</label><input id="personName" placeholder="اسم العميل أو المورد"></div>
+   <div class="field"><label>النوع</label><select id="personType"><option value="customer">عميل</option><option value="supplier">مورد</option><option value="both">عميل ومورد</option></select></div>
+   <div class="field"><label>رقم الهاتف</label><input id="personPhone" inputmode="tel" placeholder="01xxxxxxxxx"></div>
+   <div class="field"><label>رصيد افتتاحي مستحق لك (+) / عليك (-)</label><input id="personBalance" type="number" step=".01" value="0"></div>
+  </div><div class="actions"><button onclick="savePerson()">حفظ</button><button class="secondary" onclick="resetPerson()">مسح الحقول</button></div><p class="muted">الرصيد الموجب يعني أن العميل مدين لك، والسالب يعني أن عليك رصيدًا للمورد.</p></div>
+  <div class="card"><h2>دليل العملاء والموردين</h2><input class="search" id="peopleSearch" placeholder="ابحث بالاسم أو الهاتف" oninput="renderPeople()"><div id="peopleTable" class="tablewrap"></div></div>
+ </section>
+ <section id="invoice" class="panel">
+  <div class="card"><h2>إنشاء فاتورة</h2><div class="grid">
+   <div class="field"><label>نوع الفاتورة</label><select id="invType" onchange="invoiceTypeChanged()"><option value="sale">بيع</option><option value="purchase">شراء</option><option value="sale_return">مرتجع بيع</option><option value="purchase_return">مرتجع شراء</option></select></div>
+   <div class="field"><label>العميل / المورد</label><select id="invPerson"><option value="">نقدي / بدون حساب</option></select></div>
+   <div class="field"><label>المدفوع الآن (ج.م)</label><input id="invPaid" type="number" min="0" step=".01" value="0"></div>
+   <div class="field"><label>خصم الفاتورة (ج.م)</label><input id="invDiscount" type="number" min="0" step=".01" value="0" oninput="calcInvoice()"></div>
+   <div class="field"><label>ملاحظات</label><input id="invNote" placeholder="اختياري"></div>
+   <div class="field"><label>إضافة صنف بالباركود</label><div style="display:flex;gap:5px"><input id="barcodeAdd" placeholder="اكتب/امسح الكود" onkeydown="if(event.key==='Enter'){event.preventDefault();addByBarcode()}"><button class="secondary" onclick="scanBarcode('barcodeAdd')">📷</button></div></div>
+  </div><h2>أصناف الفاتورة</h2><div id="invoiceItems"></div><div class="actions"><button class="secondary" onclick="addInvoiceRow()">＋ إضافة صنف</button></div>
+  <div style="background:#f5f8fb;padding:12px;border-radius:12px;margin-top:12px"><div style="display:flex;justify-content:space-between;margin:6px 0"><span>الإجمالي قبل الخصم</span><b id="invSubtotal">0.00 ج.م</b></div><div style="display:flex;justify-content:space-between;margin:6px 0"><span>الإجمالي النهائي</span><b id="invTotal">0.00 ج.م</b></div><div style="display:flex;justify-content:space-between;margin:6px 0"><span>المتبقي</span><b id="invRemaining">0.00 ج.م</b></div></div>
+  <div class="actions" style="margin-top:12px"><button onclick="saveInvoice()">حفظ الفاتورة</button><button class="secondary" onclick="resetInvoice()">فاتورة جديدة</button></div></div>
+ </section>
+ <section id="invoices" class="panel"><div class="card"><h2>سجل الفواتير</h2><input id="invSearch" class="search" placeholder="ابحث برقم الفاتورة أو الاسم" oninput="renderInvoices()"><div id="invoicesTable" class="tablewrap"></div></div></section>
+ <section id="debts" class="panel">
+  <div class="card"><h2>تسجيل تحصيل أو سداد</h2><div class="grid">
+   <div class="field"><label>الحساب</label><select id="payPerson"></select></div><div class="field"><label>نوع الحركة</label><select id="payType"><option value="collect">تحصيل من عميل</option><option value="pay">سداد لمورد</option></select></div><div class="field"><label>المبلغ (ج.م)</label><input id="payAmount" type="number" min=".01" step=".01"></div><div class="field"><label>ملاحظات</label><input id="payNote" placeholder="اختياري"></div>
+  </div><button onclick="savePayment()">تسجيل الحركة</button></div>
+  <div class="card"><h2>أرصدة الحسابات</h2><div id="debtsTable" class="tablewrap"></div></div>
+  <div class="card"><h2>سجل التحصيل والسداد</h2><div id="paymentsTable" class="tablewrap"></div></div>
+ </section>
+ <section id="reports" class="panel"><div class="card"><h2>تقارير مختصرة</h2><div id="reportSummary"></div></div><div class="card"><h2>الأصناف منخفضة المخزون (5 قطع أو أقل)</h2><div id="lowStock"></div></div></section>
+ 
+<section id="cloudsetup" class="panel">
+ <div class="card">
+  <h2>تفعيل المزامنة بين الموبايل والكمبيوتر</h2>
+  <div class="notice">تم إدخال إعدادات مشروع Firebase الخاص بك. يلزم نشر ملف البرنامج على استضافة HTTPS وإكمال قواعد Firestore قبل أن تعمل المزامنة بين الأجهزة.</div>
+  <div class="grid" style="margin-top:12px">
+   <div class="field full"><label>Firebase API Key</label><input id="fbApiKey" placeholder="AIza..."></div>
+   <div class="field"><label>Auth Domain</label><input id="fbAuthDomain" placeholder="your-project.firebaseapp.com"></div>
+   <div class="field"><label>Project ID</label><input id="fbProjectId" placeholder="your-project-id"></div>
+   <div class="field"><label>App ID</label><input id="fbAppId" placeholder="1:...:web:..."></div>
+   <div class="field"><label>البريد الإلكتروني</label><input id="cloudEmail" type="email" placeholder="name@example.com"></div>
+   <div class="field"><label>كلمة المرور</label><input id="cloudPassword" type="password" placeholder="8 أحرف أو أكثر"></div>
+  </div>
+  <div class="actions">
+   <button onclick="saveFirebaseConfig()">حفظ إعدادات الربط</button>
+   <button onclick="cloudSignUp()">إنشاء حساب</button>
+   <button onclick="cloudSignIn()">تسجيل الدخول والمزامنة</button>
+   <button class="secondary" onclick="cloudSignOut()">تسجيل الخروج</button>
+  </div>
+  <p class="muted">بعد إنشاء مشروع Firebase: فعّل Authentication بطريقة Email/Password وأنشئ قاعدة Firestore. احتفظ ببيانات الدخول لنفسك، ولا تشارك كلمة المرور.</p>
+  <div id="cloudMessage" class="muted" style="margin-top:10px"></div>
+ </div>
+</section>
+
+ <section id="backup" class="panel"><div class="card"><h2>النسخ الاحتياطي ونقل البيانات</h2><p class="muted">نزّل نسخة JSON واحتفظ بها خارج الموبايل. الاستعادة تستبدل البيانات الحالية، لذلك صدّر نسخة أولًا.</p><div class="actions"><button onclick="exportData()">تنزيل نسخة احتياطية</button><label class="secondary" style="padding:11px 14px;border-radius:10px;font-weight:700;cursor:pointer">استعادة نسخة<input id="restoreFile" type="file" accept=".json,application/json" hidden onchange="importData(event)"></label><button class="danger" onclick="clearData()">مسح كل البيانات</button></div><div class="notice" style="margin-top:12px">إذا مسحت بيانات المتصفح أو فقدت الهاتف قد تفقد بياناتك ما لم تحتفظ بنسخة احتياطية. لا تدخل بيانات حساسة لا تحتاجها.</div></div></section>
+ <section id="printarea" class="hide"></section>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+let app = null, auth = null, store = null, cloudUser = null, cloudReady = false, pendingWrite = null;
+const cfgKey = "daftar_firebase_config_v1";
+const DEFAULT_FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCKX6gW5SzyBeX1HdgQyK4b1I2pioJmjec",
+  authDomain: "dafter-electricity.firebaseapp.com",
+  databaseURL: "https://dafter-electricity-default-rtdb.firebaseio.com",
+  projectId: "dafter-electricity",
+  storageBucket: "dafter-electricity.firebasestorage.app",
+  messagingSenderId: "260714800332",
+  appId: "1:260714800332:web:20d515d09cd68c84684e69",
+  measurementId: "G-Y6B1CYLDD8"
+};
+
+const userDoc = () => doc(store, "shops", cloudUser.uid);
+function message(s){ const el=document.getElementById("cloudMessage"); if(el) el.textContent=s; }
+function status(s){ const el=document.getElementById("cloudStatus"); if(el) el.textContent="المزامنة السحابية: "+s; }
+function getConfig(){ try{return JSON.parse(localStorage.getItem(cfgKey)||"null") || DEFAULT_FIREBASE_CONFIG}catch{return DEFAULT_FIREBASE_CONFIG} }
+function initCloud(){
+ const c=getConfig();
+ if(!c || !c.apiKey || !c.authDomain || !c.projectId || !c.appId){ status("غير مفعّلة — أدخل بيانات Firebase"); return false; }
+ try{
+  app=initializeApp({apiKey:c.apiKey,authDomain:c.authDomain,projectId:c.projectId,appId:c.appId},"daftarCloud");
+  auth=getAuth(app); store=getFirestore(app);
+  onAuthStateChanged(auth, async u=>{
+   cloudUser=u; cloudReady=false;
+   if(!u){status("غير مسجل الدخول");return;}
+   status("جارٍ تحميل بيانات الحساب…");
+   try{
+    const snap=await getDoc(userDoc());
+    if(snap.exists()){
+     const remote=snap.data().db;
+     if(remote && typeof remote==="object"){
+      window.replaceDBFromCloud(remote);
+     }
+    }else{
+     await setDoc(userDoc(),{db:window.exportDBForCloud(),updatedAt:new Date().toISOString(),email:u.email||""});
+    }
+    cloudReady=true; status("متصل بحساب "+(u.email||"")); message("تم الاتصال. البيانات تُزامَن مع الأجهزة التي تسجل الدخول بنفس الحساب.");
+   }catch(e){status("خطأ في المزامنة");message("تعذر تحميل البيانات: "+(e.message||e));}
+  });
+  return true;
+ }catch(e){status("تعذر تهيئة Firebase");message("راجع بيانات Firebase: "+e.message);return false;}
+}
+window.saveFirebaseConfig=function(){
+ const c={...DEFAULT_FIREBASE_CONFIG,
+  apiKey:document.getElementById("fbApiKey").value.trim() || DEFAULT_FIREBASE_CONFIG.apiKey,
+  authDomain:document.getElementById("fbAuthDomain").value.trim() || DEFAULT_FIREBASE_CONFIG.authDomain,
+  projectId:document.getElementById("fbProjectId").value.trim() || DEFAULT_FIREBASE_CONFIG.projectId,
+  appId:document.getElementById("fbAppId").value.trim() || DEFAULT_FIREBASE_CONFIG.appId};
+ localStorage.setItem(cfgKey,JSON.stringify(c));
+ message("تم حفظ إعدادات مشروعك. أعد تحميل الصفحة لتفعيل الاتصال.");
+ status("تم حفظ الإعدادات — أعد تحميل الصفحة");
+};
+window.cloudSignUp=async function(){
+ if(!auth){message("احفظ إعدادات Firebase الصحيحة ثم أعد تحميل الصفحة.");return;}
+ const email=document.getElementById("cloudEmail").value.trim(), pass=document.getElementById("cloudPassword").value;
+ if(!email||pass.length<6){message("أدخل بريدًا صحيحًا وكلمة مرور لا تقل عن 6 أحرف.");return;}
+ try{await createUserWithEmailAndPassword(auth,email,pass);message("تم إنشاء الحساب.");}catch(e){message("تعذر إنشاء الحساب: "+e.message);}
+};
+window.cloudSignIn=async function(){
+ if(!auth){message("احفظ إعدادات Firebase الصحيحة ثم أعد تحميل الصفحة.");return;}
+ const email=document.getElementById("cloudEmail").value.trim(), pass=document.getElementById("cloudPassword").value;
+ try{await signInWithEmailAndPassword(auth,email,pass);message("تم تسجيل الدخول.");}catch(e){message("تعذر تسجيل الدخول: "+e.message);}
+};
+window.cloudSignOut=async function(){if(auth){try{await signOut(auth);message("تم تسجيل الخروج.");}catch(e){message(e.message);}}};
+window.cloudPersist=async function(dbSnapshot){
+ if(!cloudReady || !cloudUser || !store) return;
+ clearTimeout(pendingWrite);
+ pendingWrite=setTimeout(async()=>{
+  try{await setDoc(userDoc(),{db:dbSnapshot,updatedAt:new Date().toISOString(),email:cloudUser.email||""});status("تمت المزامنة — "+new Date().toLocaleTimeString("ar-EG"));}
+  catch(e){status("تعذر الحفظ السحابي");message("لم يتم حفظ آخر تعديل على السحابة: "+e.message);}
+ },500);
+};
+window.cloudLoadInitial=function(){
+ const c=getConfig();
+ document.getElementById("fbApiKey").value=c.apiKey||"";
+ document.getElementById("fbAuthDomain").value=c.authDomain||"";
+ document.getElementById("fbProjectId").value=c.projectId||"";
+ document.getElementById("fbAppId").value=c.appId||"";
+ initCloud();
+};
+window.addEventListener("DOMContentLoaded",()=>window.cloudLoadInitial());
+</script>
+
+<script>
+const KEY='daftarElectricity_v1';
+let db=loadDB(), draftRows=[];
+window.exportDBForCloud=()=>JSON.parse(JSON.stringify(db));
+window.replaceDBFromCloud=(remote)=>{db=Object.assign(fresh(),remote||{});localStorage.setItem(KEY,JSON.stringify(db));renderAll();};
+window.openCloudLogin=()=>{tab("cloudsetup");};
+
+function fresh(){return {shop:{name:'محل الأدوات الكهربائية',phone:'',address:''},products:[],people:[],invoices:[],payments:[],seq:1}}
+function loadDB(){try{return Object.assign(fresh(),JSON.parse(localStorage.getItem(KEY)||'{}'))}catch(e){return fresh()}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(db));renderAll();if(window.cloudPersist)window.cloudPersist(JSON.parse(JSON.stringify(db)))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function money(n){return (Number(n)||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ج.م'}
+function id(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function dateNow(){return new Date().toISOString()}
+function dateText(d){return new Date(d).toLocaleString('ar-EG',{dateStyle:'short',timeStyle:'short'})}
+function tab(name){document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===name));document.querySelectorAll('.nav button').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));if(name==='invoice')refreshPersonOptions();window.scrollTo({top:0,behavior:'smooth'})}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>tab(b.dataset.tab)));
+function editShop(){let n=prompt('اسم المحل:',db.shop.name||'');if(n===null)return;let p=prompt('رقم الهاتف (اختياري):',db.shop.phone||'');let a=prompt('العنوان (اختياري):',db.shop.address||'');db.shop={name:n.trim()||'محل الأدوات الكهربائية',phone:p||'',address:a||''};persist()}
+function saveProduct(){let name=document.getElementById('pName').value.trim(),cost=+document.getElementById('pCost').value,price=+document.getElementById('pPrice').value,qty=+document.getElementById('pQty').value,b=document.getElementById('pBarcode').value.trim(),edit=document.getElementById('editProdId').value;if(!name||document.getElementById('pCost').value===''||document.getElementById('pPrice').value===''||document.getElementById('pQty').value===''||cost<0||price<0||qty<0)return alert('أدخل اسم الصنف والأسعار والكمية بشكل صحيح.');if(b&&db.products.some(p=>p.barcode===b&&p.id!==edit))return alert('هذا الباركود مسجل لصنف آخر.');if(edit){let p=db.products.find(x=>x.id===edit);if(p){p.name=name;p.barcode=b;p.category=document.getElementById('pCategory').value.trim();p.cost=cost;p.price=price;p.qty=qty}}else db.products.push({id:id(),name,barcode:b,category:document.getElementById('pCategory').value.trim(),cost,price,qty});resetProduct();persist()}
+function resetProduct(){['editProdId','pName','pBarcode','pCategory','pCost','pPrice','pQty'].forEach(x=>document.getElementById(x).value='');document.getElementById('prodTitle').textContent='إضافة صنف للمخزون'}
+function editProduct(pid){let p=db.products.find(x=>x.id===pid);if(!p)return;tab('products');document.getElementById('editProdId').value=p.id;document.getElementById('pName').value=p.name;document.getElementById('pBarcode').value=p.barcode||'';document.getElementById('pCategory').value=p.category||'';document.getElementById('pCost').value=p.cost;document.getElementById('pPrice').value=p.price;document.getElementById('pQty').value=p.qty;document.getElementById('prodTitle').textContent='تعديل الصنف'}
+function deleteProduct(pid){if(db.invoices.some(i=>i.items.some(x=>x.pid===pid)))return alert('لا يمكن حذف صنف مرتبط بفواتير. يمكنك تعديل اسمه أو كميته.');if(confirm('حذف هذا الصنف؟')){db.products=db.products.filter(p=>p.id!==pid);persist()}}
+function renderProducts(){let q=(document.getElementById('prodSearch')?.value||'').toLowerCase();let arr=db.products.filter(p=>(p.name+' '+p.barcode+' '+p.category).toLowerCase().includes(q));document.getElementById('productsTable').innerHTML=arr.length?`<table><thead><tr><th>الصنف / الكود</th><th>شراء</th><th>بيع</th><th>الكمية</th><th>إجراءات</th></tr></thead><tbody>${arr.map(p=>`<tr><td><b>${esc(p.name)}</b><div class="muted">${esc(p.barcode||'بدون باركود')} · ${esc(p.category||'بدون تصنيف')}</div></td><td>${money(p.cost)}</td><td>${money(p.price)}</td><td>${p.qty}</td><td><button class="small secondary" onclick="editProduct('${p.id}')">تعديل</button> <button class="small danger" onclick="deleteProduct('${p.id}')">حذف</button></td></tr>`).join('')}</tbody></table>`:'<div class="empty">لا توجد أصناف بعد. أضف أول صنف من النموذج أعلاه.</div>'}
+function savePerson(){let name=document.getElementById('personName').value.trim(),type=document.getElementById('personType').value,phone=document.getElementById('personPhone').value.trim(),balance=+document.getElementById('personBalance').value||0,e=document.getElementById('editPersonId').value;if(!name)return alert('اكتب الاسم أولًا.');if(e){let p=db.people.find(x=>x.id===e);if(p)Object.assign(p,{name,type,phone,opening:balance})}else db.people.push({id:id(),name,type,phone,opening:balance});resetPerson();persist()}
+function resetPerson(){['editPersonId','personName','personPhone'].forEach(x=>document.getElementById(x).value='');document.getElementById('personBalance').value='0';document.getElementById('personType').value='customer'}
+function editPerson(pid){let p=db.people.find(x=>x.id===pid);if(!p)return;tab('people');document.getElementById('editPersonId').value=p.id;document.getElementById('personName').value=p.name;document.getElementById('personType').value=p.type;document.getElementById('personPhone').value=p.phone||'';document.getElementById('personBalance').value=p.opening||0}
+function personBalance(pid){let p=db.people.find(x=>x.id===pid);if(!p)return 0;let bal=Number(p.opening)||0;db.invoices.forEach(i=>{if(i.personId===pid){if(i.type==='sale')bal+=i.total-i.paid;else if(i.type==='sale_return')bal-=i.total;else if(i.type==='purchase')bal-=i.total-i.paid;else if(i.type==='purchase_return')bal+=i.total}});db.payments.forEach(x=>{if(x.personId===pid)bal+=x.type==='collect'?-x.amount:x.amount});return bal}
+function renderPeople(){let q=(document.getElementById('peopleSearch')?.value||'').toLowerCase();let a=db.people.filter(p=>(p.name+' '+p.phone).toLowerCase().includes(q));document.getElementById('peopleTable').innerHTML=a.length?`<table><thead><tr><th>الاسم</th><th>النوع</th><th>الهاتف</th><th>الرصيد</th><th>تعديل</th></tr></thead><tbody>${a.map(p=>{let b=personBalance(p.id);return `<tr><td>${esc(p.name)}</td><td>${p.type==='customer'?'عميل':p.type==='supplier'?'مورد':'عميل ومورد'}</td><td>${esc(p.phone||'—')}</td><td class="${b>0?'red':b<0?'green':''}">${money(b)}<div class="muted">${b>0?'مستحق لك':b<0?'مستحق للمورد':'متوازن'}</div></td><td><button class="small secondary" onclick="editPerson('${p.id}')">تعديل</button></td></tr>`}).join('')}</tbody></table>`:'<div class="empty">لا يوجد أشخاص مسجلون.</div>';refreshPersonOptions()}
+function refreshPersonOptions(){let opts='<option value="">نقدي / بدون حساب</option>'+db.people.map(p=>`<option value="${p.id}">${esc(p.name)} — ${p.type==='supplier'?'مورد':p.type==='both'?'عميل ومورد':'عميل'}</option>`).join('');let inv=document.getElementById('invPerson'),pay=document.getElementById('payPerson');if(inv){let old=inv.value;inv.innerHTML=opts;inv.value=old}if(pay){let old=pay.value;pay.innerHTML='<option value="">اختر الحساب</option>'+db.people.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('');pay.value=old}}
+function addInvoiceRow(pid='',qty=1){let holder=document.getElementById('invoiceItems');let row=document.createElement('div');row.className='itemrow';row.innerHTML=`<select class="rowprod" onchange="rowProductChanged(this)"><option value="">اختر صنفًا</option>${db.products.map(p=>`<option value="${p.id}" ${p.id===pid?'selected':''}>${esc(p.name)} (${p.qty} متاح)</option>`).join('')}</select><input class="rowqty" type="number" min=".01" step=".01" value="${qty}" aria-label="الكمية" oninput="calcInvoice()"><input class="rowprice" type="number" min="0" step=".01" placeholder="السعر" aria-label="السعر" oninput="calcInvoice()"><button class="remove" onclick="this.parentElement.remove();calcInvoice()">×</button>`;holder.appendChild(row);if(pid)rowProductChanged(row.querySelector('.rowprod'));calcInvoice()}
+function rowProductChanged(sel){let p=db.products.find(x=>x.id===sel.value),row=sel.closest('.itemrow');if(p){row.querySelector('.rowprice').value=(document.getElementById('invType').value.includes('purchase')?p.cost:p.price)}calcInvoice()}
+function invoiceTypeChanged(){document.querySelectorAll('.itemrow').forEach(r=>{let p=db.products.find(x=>x.id===r.querySelector('.rowprod').value);if(p)r.querySelector('.rowprice').value=document.getElementById('invType').value.includes('purchase')?p.cost:p.price});calcInvoice()}
+function currentRows(){return [...document.querySelectorAll('.itemrow')].map(r=>{let p=db.products.find(x=>x.id===r.querySelector('.rowprod').value);return {pid:p?.id||'',name:p?.name||'',qty:+r.querySelector('.rowqty').value||0,price:+r.querySelector('.rowprice').value||0,cost:p?.cost||0,barcode:p?.barcode||''}}).filter(x=>x.pid&&x.qty>0)}
+function calcInvoice(){let subtotal=currentRows().reduce((s,x)=>s+x.qty*x.price,0),discount=Math.max(0,+document.getElementById('invDiscount').value||0),total=Math.max(0,subtotal-discount),paid=Math.max(0,+document.getElementById('invPaid').value||0);document.getElementById('invSubtotal').textContent=money(subtotal);document.getElementById('invTotal').textContent=money(total);document.getElementById('invRemaining').textContent=money(Math.max(0,total-paid))}
+function addByBarcode(){let b=document.getElementById('barcodeAdd').value.trim();if(!b)return;let p=db.products.find(x=>x.barcode===b||x.id===b||x.name.toLowerCase()===b.toLowerCase());if(!p){alert('لم يتم العثور على الصنف. تأكد من تسجيل الباركود في المخزون.');return}let row=[...document.querySelectorAll('.itemrow')].find(r=>r.querySelector('.rowprod').value===p.id);if(row){row.querySelector('.rowqty').value=(+row.querySelector('.rowqty').value||0)+1;calcInvoice()}else addInvoiceRow(p.id,1);document.getElementById('barcodeAdd').value=''}
+async function scanBarcode(inputId){if(!('BarcodeDetector' in window)||!navigator.mediaDevices?.getUserMedia){alert('المسح بالكاميرا غير مدعوم في هذا المتصفح. يمكنك استخدام قارئ باركود USB/Bluetooth أو كتابة الرقم في الحقل.');return}let stream;try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});let video=document.createElement('video');video.setAttribute('playsinline','');video.srcObject=stream;await video.play();let overlay=document.createElement('div');overlay.style='position:fixed;inset:0;background:#000d;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;color:white;padding:20px';overlay.innerHTML='<p>وجّه الكاميرا إلى الباركود</p><button id="closeScan" class="secondary">إلغاء</button>';overlay.insertBefore(video,overlay.firstChild);video.style='width:min(90vw,480px);border-radius:12px';document.body.appendChild(overlay);let done=false;overlay.querySelector('#closeScan').onclick=()=>{done=true;stream.getTracks().forEach(t=>t.stop());overlay.remove()};let detector=new BarcodeDetector();while(!done){let codes=await detector.detect(video).catch(()=>[]);if(codes.length){document.getElementById(inputId).value=codes[0].rawValue;done=true;stream.getTracks().forEach(t=>t.stop());overlay.remove();if(inputId==='barcodeAdd')addByBarcode();break}await new Promise(r=>setTimeout(r,250))}}catch(e){if(stream)stream.getTracks().forEach(t=>t.stop());alert('تعذر تشغيل الكاميرا. تحقق من إذن الكاميرا واستخدم اتصالًا آمنًا (HTTPS).')}}
+function saveInvoice(){let type=document.getElementById('invType').value,rows=currentRows();if(!rows.length)return alert('أضف صنفًا واحدًا على الأقل.');for(let r of rows){let p=db.products.find(x=>x.id===r.pid);if(!p)return alert('أحد الأصناف لم يعد موجودًا.');if((type==='sale'||type==='purchase_return')&&p.qty<r.qty)return alert('الكمية غير كافية للصنف: '+p.name);if(type==='sale_return'&&p.qty<0)return alert('راجع مخزون الصنف: '+p.name)}let subtotal=rows.reduce((s,x)=>s+x.qty*x.price,0),discount=Math.max(0,+document.getElementById('invDiscount').value||0),total=Math.max(0,subtotal-discount);if(discount>subtotal)return alert('الخصم لا يمكن أن يزيد عن الإجمالي.');let paid=Math.max(0,+document.getElementById('invPaid').value||0);if(paid>total)return alert('المدفوع لا يمكن أن يزيد عن إجمالي الفاتورة.');let t=type,sign=(t==='sale'||t==='purchase_return')?-1:1;rows.forEach(r=>{let p=db.products.find(x=>x.id===r.pid);p.qty+=sign*r.qty});let inv={id:id(),number:String(db.seq++).padStart(5,'0'),type,personId:document.getElementById('invPerson').value||'',items:rows.map(x=>({...x})),subtotal,discount,total,paid,note:document.getElementById('invNote').value.trim(),date:dateNow()};db.invoices.push(inv);persist();resetInvoice();if(confirm('تم حفظ الفاتورة رقم '+inv.number+'. هل تريد طباعتها الآن؟'))printInvoice(inv.id)}
+function resetInvoice(){document.getElementById('invoiceItems').innerHTML='';document.getElementById('invPaid').value='0';document.getElementById('invDiscount').value='0';document.getElementById('invNote').value='';document.getElementById('barcodeAdd').value='';addInvoiceRow();calcInvoice()}
+function invTypeName(t){return ({sale:'بيع',purchase:'شراء','sale_return':'مرتجع بيع','purchase_return':'مرتجع شراء'})[t]||t}
+function personName(pid){return db.people.find(p=>p.id===pid)?.name||'نقدي / بدون حساب'}
+function invProfit(i){if(i.type==='sale')return i.items.reduce((s,x)=>s+(x.price-x.cost)*x.qty,0)-i.discount;if(i.type==='sale_return')return -i.items.reduce((s,x)=>s+(x.price-x.cost)*x.qty,0)+i.discount;return 0}
+function renderInvoices(){let q=(document.getElementById('invSearch')?.value||'').toLowerCase(),a=[...db.invoices].reverse().filter(i=>(i.number+' '+personName(i.personId)).toLowerCase().includes(q));document.getElementById('invoicesTable').innerHTML=a.length?`<table><thead><tr><th>رقم / التاريخ</th><th>النوع</th><th>الحساب</th><th>الإجمالي</th><th>المدفوع</th><th>إجراءات</th></tr></thead><tbody>${a.map(i=>`<tr><td>#${i.number}<div class="muted">${dateText(i.date)}</div></td><td>${invTypeName(i.type)}</td><td>${esc(personName(i.personId))}</td><td>${money(i.total)}</td><td>${money(i.paid)}</td><td><button class="small secondary" onclick="printInvoice('${i.id}')">طباعة</button> <button class="small danger" onclick="deleteInvoice('${i.id}')">حذف</button></td></tr>`).join('')}</tbody></table>`:'<div class="empty">لا توجد فواتير مسجلة.</div>'}
+function deleteInvoice(iid){let i=db.invoices.find(x=>x.id===iid);if(!i||!confirm('حذف الفاتورة؟ سيتم عكس حركة المخزون، لكن راجع أرصدة الحسابات بعد الحذف.'))return;let sign=(i.type==='sale'||i.type==='purchase_return')?1:-1;i.items.forEach(x=>{let p=db.products.find(p=>p.id===x.pid);if(p)p.qty+=sign*x.qty});db.invoices=db.invoices.filter(x=>x.id!==iid);persist()}
+function printInvoice(iid){let i=db.invoices.find(x=>x.id===iid);if(!i)return;let shop=db.shop;let area=document.getElementById('printarea');area.innerHTML=`<div class="card"><div class="printhead"><h2>${esc(shop.name)}</h2><div>${esc(shop.address||'')}</div><div>${esc(shop.phone||'')}</div><h3>فاتورة ${invTypeName(i.type)} #${i.number}</h3><div>${dateText(i.date)}</div><div>الحساب: ${esc(personName(i.personId))}</div></div><table class="printtable" style="width:100%;margin-top:16px"><thead><tr><th>الصنف</th><th>الكمية</th><th>السعر</th><th>الإجمالي</th></tr></thead><tbody>${i.items.map(x=>`<tr><td>${esc(x.name)}</td><td>${x.qty}</td><td>${money(x.price)}</td><td>${money(x.qty*x.price)}</td></tr>`).join('')}</tbody></table><div class="printfoot"><p>الإجمالي: ${money(i.subtotal)}</p><p>الخصم: ${money(i.discount)}</p><h3>الصافي: ${money(i.total)}</h3><p>المدفوع: ${money(i.paid)} — المتبقي: ${money(Math.max(0,i.total-i.paid))}</p><p>ملاحظات: ${esc(i.note||'—')}</p><p style="text-align:center;margin-top:35px">شكرًا لتعاملكم معنا</p></div></div>`;area.classList.remove('hide');window.print();setTimeout(()=>area.classList.add('hide'),500)}
+function savePayment(){let pid=document.getElementById('payPerson').value,amount=+document.getElementById('payAmount').value,type=document.getElementById('payType').value;if(!pid)return alert('اختر العميل أو المورد.');if(!(amount>0))return alert('أدخل مبلغًا صحيحًا.');db.payments.push({id:id(),personId:pid,amount,type,note:document.getElementById('payNote').value.trim(),date:dateNow()});document.getElementById('payAmount').value='';document.getElementById('payNote').value='';persist()}
+function renderDebts(){let a=db.people;document.getElementById('debtsTable').innerHTML=a.length?`<table><thead><tr><th>الحساب</th><th>الرصيد</th><th>الحالة</th></tr></thead><tbody>${a.map(p=>{let b=personBalance(p.id);return `<tr><td>${esc(p.name)}</td><td>${money(Math.abs(b))}</td><td><span class="pill ${b<0?'debt':''}">${b>0?'مدين لك':b<0?'مستحق عليك':'متوازن'}</span></td></tr>`}).join('')}</tbody></table>`:'<div class="empty">أضف العملاء والموردين أولًا.</div>';let ps=[...db.payments].reverse();document.getElementById('paymentsTable').innerHTML=ps.length?`<table><thead><tr><th>التاريخ</th><th>الاسم</th><th>الحركة</th><th>المبلغ</th><th>ملاحظة</th></tr></thead><tbody>${ps.map(p=>`<tr><td>${dateText(p.date)}</td><td>${esc(personName(p.personId))}</td><td>${p.type==='collect'?'تحصيل':'سداد'}</td><td>${money(p.amount)}</td><td>${esc(p.note||'—')}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">لا توجد حركات مسجلة.</div>';refreshPersonOptions()}
+function renderHome(){let today=new Date().toDateString(),sales=db.invoices.filter(i=>i.type==='sale'&&new Date(i.date).toDateString()===today).reduce((s,i)=>s+i.total,0),profit=db.invoices.reduce((s,i)=>s+invProfit(i),0),stock=db.products.reduce((s,p)=>s+p.cost*p.qty,0),debt=db.people.reduce((s,p)=>s+Math.max(0,personBalance(p.id)),0);document.getElementById('todaySales').textContent=money(sales);document.getElementById('totalProfit').textContent=money(profit);document.getElementById('stockValue').textContent=money(stock);document.getElementById('debtTotal').textContent=money(debt);let a=[...db.invoices].reverse().slice(0,5);document.getElementById('recent').innerHTML=a.length?`<table><thead><tr><th>رقم</th><th>النوع</th><th>الحساب</th><th>الإجمالي</th></tr></thead><tbody>${a.map(i=>`<tr><td>#${i.number}</td><td>${invTypeName(i.type)}</td><td>${esc(personName(i.personId))}</td><td>${money(i.total)}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">لم تسجل أي فاتورة بعد.</div>'}
+function renderReports(){let sales=db.invoices.filter(i=>i.type==='sale').reduce((s,i)=>s+i.total,0),purchases=db.invoices.filter(i=>i.type==='purchase').reduce((s,i)=>s+i.total,0),returns=db.invoices.filter(i=>i.type==='sale_return').reduce((s,i)=>s+i.total,0),profit=db.invoices.reduce((s,i)=>s+invProfit(i),0),expenses=0;document.getElementById('reportSummary').innerHTML=`<div class="grid"><div class="stat"><div class="label">إجمالي فواتير البيع</div><div class="num">${money(sales)}</div></div><div class="stat"><div class="label">مرتجعات البيع</div><div class="num">${money(returns)}</div></div><div class="stat"><div class="label">إجمالي المشتريات</div><div class="num">${money(purchases)}</div></div><div class="stat"><div class="label">ربح تقديري من البيع</div><div class="num ${profit<0?'red':'green'}">${money(profit)}</div></div></div><p class="muted">الربح تقديري على أساس أسعار الشراء المسجلة وقت الفاتورة. المصروفات التشغيلية والضرائب وتكاليف الشحن غير مضافة في هذه النسخة.</p>`;let low=db.products.filter(p=>p.qty<=5);document.getElementById('lowStock').innerHTML=low.length?`<table><thead><tr><th>الصنف</th><th>المتوفر</th><th>كود</th></tr></thead><tbody>${low.map(p=>`<tr><td>${esc(p.name)}</td><td class="red">${p.qty}</td><td>${esc(p.barcode||'—')}</td></tr>`).join('')}</tbody></table>`:'<div class="empty">لا توجد أصناف منخفضة المخزون.</div>'}
+function renderAll(){document.getElementById('shopline').textContent=db.shop.name+(db.shop.phone?' · '+db.shop.phone:'');renderProducts();renderPeople();renderInvoices();renderDebts();renderHome();renderReports()}
+function exportData(){let blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='daftar-electricity-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();URL.revokeObjectURL(url)}
+function importData(ev){let f=ev.target.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!Array.isArray(d.products)||!Array.isArray(d.invoices)||!Array.isArray(d.people))throw Error();if(!confirm('سيتم استبدال البيانات الحالية. هل لديك نسخة من البيانات الحالية؟'))return;db=Object.assign(fresh(),d);persist();alert('تمت الاستعادة.')}catch(e){alert('الملف غير صالح أو غير متوافق.')}ev.target.value=''};r.readAsText(f)}
+function clearData(){if(!confirm('تحذير: سيتم مسح جميع الأصناف والفواتير والحسابات نهائيًا من هذا المتصفح. هل تريد المتابعة؟'))return;if(!confirm('تأكيد أخير: هل نزّلت نسخة احتياطية أو تقبل فقدان البيانات؟'))return;db=fresh();persist();resetInvoice()}
+renderAll();addInvoiceRow();
+</script>
+</body></html>
